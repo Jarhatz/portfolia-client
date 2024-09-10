@@ -1,17 +1,30 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { MdSend } from "react-icons/md";
 import "./Chatbar.css";
 
 const ChatBar = () => {
   const [input, setInput] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (input.trim()) {
-      console.log(input);
-      setInput("");
+      const question = input
+      setInput("")
+      console.log(question)
+      try {
+        const response = await axios.get("http://localhost:5000/chat", {
+          params: {
+            question:
+              "Can you tell me which stocks are doing really good right now for investing?",
+          },
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="chat-bar-form">
