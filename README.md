@@ -1,4 +1,19 @@
-# React + TypeScript + Vite
+## Portfolia-Client
+
+Please begin with cloning the repository:
+~~~
+
+~~~
+
+~~~
+bun init
+~~~
+To start the development server:
+~~~
+bun run dev
+~~~
+
+
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
