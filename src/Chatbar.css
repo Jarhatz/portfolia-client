@@ -11,13 +11,13 @@
   width: 100%;
   border: none;
   outline: none;
-  padding: 1rem 0.5rem 1rem 1rem;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
   border-radius: 1rem;
   color: #888;
   background-color: #181818;
   resize: none;
-  overflow: hidden;
-  max-height: 10rem;
+  overflow: auto;
+  max-height: 5rem;
 }
 
 .chat-bar-input::placeholder {
@@ -31,5 +31,4 @@
   margin-right: 1rem;
   border-radius: 100%;
   cursor: pointer;
-  z-index: 1;
 }
