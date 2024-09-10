@@ -1,0 +1,35 @@
+.chat-bar-form {
+  display: flex;
+  width: 75%;
+  align-items: center;
+  background-color: #181818;
+  border-radius: 1rem;
+  padding: 0.25rem 0;
+}
+
+.chat-bar-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 1rem 0.5rem 1rem 1rem;
+  border-radius: 1rem;
+  color: #888;
+  background-color: #181818;
+  resize: none;
+  overflow: hidden;
+  max-height: 10rem;
+}
+
+.chat-bar-input::placeholder {
+  color: #888;
+}
+
+.chat-bar-send-btn {
+  background-color: white;
+  border: none;
+  padding: 0.5rem;
+  margin-right: 1rem;
+  border-radius: 100%;
+  cursor: pointer;
+  z-index: 1;
+}
