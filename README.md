@@ -3,6 +3,7 @@
 Please begin with cloning the repository:
 ~~~
 git clone https://github.com/Jarhatz/portfolia-client.git
+cd portfolia-client
 ~~~
 * Be sure to have bun or npm
 ~~~
