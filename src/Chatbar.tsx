@@ -15,8 +15,7 @@ const ChatBar = () => {
       try {
         const response = await axios.get("http://localhost:5000/chat", {
           params: {
-            question:
-              "Can you tell me which stocks are doing really good right now for investing?",
+            question: question,
           },
         });
         console.log(response.data);
