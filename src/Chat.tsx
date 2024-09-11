@@ -14,13 +14,13 @@ const Chat = () => {
     e.preventDefault();
     if (input.trim()) {
       const question = input;
-      setInput("");
       try {
-        console.log(question);
+        setInput("");
         setMessage("");
         setSymbol("");
         setAction("");
         setForecast(null);
+        console.log(question);
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_API_URL}/chat`,
           {
@@ -29,9 +29,9 @@ const Chat = () => {
             },
           }
         );
+        console.log(response.data)
         const { message, symbol, action, forecast } = response.data;
         setMessage(message);
-        console.log(message);
 
         if (symbol !== "None" && action !== "None") {
           setSymbol(symbol);
