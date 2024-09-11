@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
   font-optical-sizing: auto;
   font-synthesis: none;
   text-rendering: optimizeLegibility;

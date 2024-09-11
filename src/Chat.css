@@ -1,3 +1,24 @@
+.chat-window {
+  width: 66%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 5rem;
+}
+
+.chatbar-container {
+  position: fixed;
+  bottom: 0;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #090909;
+  padding-bottom: 1rem;
+}
+
 .chat-bar-form {
   width:66%;
   display: flex;
@@ -31,4 +52,8 @@
   margin-right: 0.5rem;
   border-radius: 100%;
   cursor: pointer;
+}
+
+.chat-text {
+  font-size: 1rem;
 }

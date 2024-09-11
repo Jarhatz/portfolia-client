@@ -1,34 +1,11 @@
 import { useState } from "react";
 import "./App.css";
-import ChatBar from "./Chatbar";
+import Chat from "./Chat";
 
 function App() {
   return (
     <div className="app-container">
-      <div className="chat-window">
-        <p className="title-text">Test</p>
-        {/* <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p>
-        <p className="title-text">Test</p> */}
-      </div>
-      <div className="chatbar-container">
-        <ChatBar />
-      </div>
+      <Chat />
     </div>
   );
 }

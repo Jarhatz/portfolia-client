@@ -9,29 +9,3 @@
   justify-content: center;
   color: white;
 }
-
-.chat-window {
-  width: 66%;
-  display: flex;
-  background-color: darkslategray;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  margin-bottom: 5rem;
-}
-
-.chatbar-container {
-  position: fixed;
-  bottom: 0;
-  z-index: 1;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #090909;
-  padding-bottom: 1rem;
-}
-
-.title-text {
-  font-size: 2rem;
-}
