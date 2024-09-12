@@ -3,7 +3,7 @@
   min-height: 100vh;
   height: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   background-color: #090909;
   align-items: center;
   justify-content: center;

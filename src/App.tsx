@@ -1,11 +1,11 @@
 import { useState } from "react";
 import "./App.css";
-import Chat from "./Chat";
+import ChatComponent from "./Chat";
 
 function App() {
   return (
     <div className="app-container">
-      <Chat />
+      <ChatComponent />
     </div>
   );
 }
