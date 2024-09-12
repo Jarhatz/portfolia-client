@@ -6,8 +6,8 @@
 }
 
 .chat-window {
-  /* background-color: darkslateblue; */
   width: 66%;
+  max-width: 50rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -29,6 +29,7 @@
 
 .chat-bar-form {
   width:66%;
+  max-width: 50rem;
   display: flex;
   align-items: center;
   background-color: #181818;
@@ -62,8 +63,24 @@
   cursor: pointer;
 }
 
-.chat-text {
-  font-size: 1rem;
+.profile-pic-container {
+  min-width: 4rem;
+  max-width: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 0.5rem;
+}
+
+.profile-pic {
+  padding: 0.25rem;
+  border-width: 2px;
+  border-color: #181818;
+}
+
+.system-text {
+  font-size: 0.8rem;
+  color: #888;
 }
 
 .user-message {
@@ -72,13 +89,26 @@
   width: 75%;
   padding: 1rem;
   margin: 1rem 0;
-  border-radius: 1rem 0 1rem 1rem;
+  border-radius: 1rem 1rem 0 1rem;
+  white-space: pre-line;
+}
+
+.assistant-message-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin: 1rem 0 2rem 0;
 }
 
 .assistant-message {
-  align-self: flex-start;
   background-color: #181818;
+  font-size: 1rem;
   padding: 1rem;
-  margin: 1rem 0 2rem 0;;
   border-radius: 0 1rem 1rem 1rem;
+}
+
+.url-stack {
+  display: flex;
+  flex-direction: column;
+  word-break: break-all;
 }

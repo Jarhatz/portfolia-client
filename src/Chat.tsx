@@ -6,7 +6,13 @@ import "./Chat.css";
 import { scroller } from "react-scroll";
 
 interface Forecast {
-  temp: string;
+  adjClose: number[];
+  close: number[];
+  date: string[];
+  high: number[];
+  low: number[];
+  open: number[];
+  volume: number[];
 }
 
 interface Message {
@@ -41,28 +47,43 @@ const Chat = () => {
         }
       );
       const { message, symbol, action, forecast, urls } = response.data;
-      console.log(forecast);
-      if (typeof forecast === "string") {
-        console.log("Forecast is a string");
+      if (typeof forecast !== "string") {
+        console.log(forecast);
+        const predictions: Forecast = {
+          adjClose: Object.values(forecast["Adj Close"]),
+          close: Object.values(forecast["Close"]),
+          date: Object.values(forecast["Date"]),
+          high: Object.values(forecast["High"]),
+          low: Object.values(forecast["Low"]),
+          open: Object.values(forecast["Open"]),
+          volume: Object.values(forecast["Volume"]),
+        };
+        const assistantMessage: Message = {
+          sender: "assistant",
+          message: message.replace(/\n/g, "<br />"),
+          symbol: symbol,
+          action: action,
+          forecast: predictions,
+          urls: urls,
+        };
+        return assistantMessage;
       } else {
-        console.log(typeof forecast);
+        console.log("no forecast provided");
+        const assistantMessage: Message = {
+          sender: "assistant",
+          message: message.replace(/\n/g, "<br />"),
+          symbol: symbol,
+          action: action,
+          urls: urls,
+        };
+        return assistantMessage;
       }
-      const assistantMessage: Message = {
-        sender: "assistant",
-        message: message,
-        symbol: symbol,
-        action: action,
-        urls: urls,
-      };
-      return assistantMessage;
     } catch (error) {
       console.error("Error Response: ", error);
       const assistantMessage: Message = {
         sender: "assistant",
         message:
-          "I am sorry, I am having trouble with connecting to the internet. Please try again.",
-        symbol: "None",
-        action: "None",
+          "I am sorry, I am having trouble with connecting with my back-end. Please check your network connectivity and try again.",
       };
       return assistantMessage;
     }
@@ -71,34 +92,32 @@ const Chat = () => {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (input.trim()) {
-      const question = input
-      setInput("")
+      const question = input;
+      setInput("");
 
       const userMessage: Message = { sender: "user", message: question };
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        userMessage,
-      ]);
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-      const assistantMessage = await sendQuestion(question)
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        assistantMessage,
-      ]);
+      const assistantMessage = await sendQuestion(question);
+      setMessages((prevMessages) => [...prevMessages, assistantMessage]);
     }
   }
 
   return (
     <div className="chat-container">
       <div className="chat-window">
-        {messages.map((msg, index) =>
+        {messages.map((msg, m_idx) =>
           msg.sender === "user" ? (
-            <div key={index} className="user-message">
+            <div key={m_idx * 10} className="user-message">
               <p className="chat-text">{msg.message}</p>
             </div>
           ) : (
-            <div key={index} className="assistant-message">
-              <p className="chat-text">
+            <div key={m_idx * 10} className="assistant-message-container">
+              <div className="profile-pic-container">
+                <img src="stockformer_logo.png" className="profile-pic" />
+                <p className="system-text">Stocker</p>
+              </div>
+              <div className="assistant-message">
                 <Typewriter
                   options={{
                     strings: msg.message,
@@ -113,8 +132,25 @@ const Chat = () => {
                 <br />
                 {msg.action}
                 <br />
-                {msg.urls}
-              </p>
+                <div className="url-stack">
+                  {msg.urls && msg.urls.length > 0 ? (
+                    msg.urls.map((url, u_idx) => (
+                      <a
+                        href={url}
+                        key={m_idx * 10 + u_idx}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <br />
+                        {url}
+                        <br />
+                      </a>
+                    ))
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </div>
             </div>
           )
         )}
