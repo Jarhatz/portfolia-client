@@ -2,15 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Typewriter from "typewriter-effect";
 import { MdSend } from "react-icons/md";
+
 import "./Chat.css";
-import { getLinkPreview } from "link-preview-js";
-// import { scroller } from "react-scroll";
+import Thumbnail from "./Thumbnail";
 
 interface Message {
   sender: "user" | "assistant";
   message: string;
-  symbol?: string;
   links: LinkPreview[];
+  symbol?: string;
   action?: string;
   forecast?: Forecast;
 }
@@ -27,10 +27,10 @@ interface Forecast {
 
 interface LinkPreview {
   url: string;
-  title: string | undefined;
-  image: string | undefined;
-  siteName: string | undefined;
-  description: string | undefined;
+  siteName: string | null | undefined;
+  image: string | null | undefined;
+  title: string | null | undefined;
+  description: string | null | undefined;
 }
 
 const ChatComponent = () => {
@@ -63,36 +63,8 @@ const ChatComponent = () => {
           },
         }
       );
-      const { message, symbol, action, forecast, urls } = response.data;
+      const { message, links, symbol, action, forecast } = response.data;
       console.log(forecast);
-
-      const links: LinkPreview[] = [];
-      for (const url of urls) {
-        try {
-          const data: any = await getLinkPreview(url, {headers: {'user-agent': 'googlebot', 'Accept-Language': 'en-US'}});
-          var link_thumbnail: string | undefined = undefined;
-          if (data.images.length > 0) {
-            link_thumbnail = data.images[0];
-          }
-          const link: LinkPreview = {
-            url: url,
-            title: data.title,
-            siteName: data.siteName,
-            description: data.description,
-            image: link_thumbnail,
-          };
-          links.push(link);
-        } catch (error) {
-          const link: LinkPreview = {
-            url: url,
-            title: undefined,
-            siteName: undefined,
-            description: undefined,
-            image: undefined,
-          };
-          links.push(link);
-        }
-      }
 
       if (
         forecast &&
@@ -174,14 +146,19 @@ const ChatComponent = () => {
         {featuredLinks.map((link, l_idx) => (
           <div key={l_idx} className="link-container">
             <a href={link.url} target="_blank" rel="noopener noreferrer">
-              <div className="thumbnail-container">
-                {link.siteName ? (
-                  <p className="sitename-text">{link.siteName}</p>
-                ) : (
-                  <p className="sitename-text">Site</p>
-                )}
-                {link.image ? <img src={link.image} /> : <></>}
-              </div>
+              {link.image ? (
+                <Thumbnail
+                  src={link.image}
+                  defaultSrc="default_thumbnail.png"
+                />
+              ) : (
+                <img src="default_thumbnail.png" />
+              )}
+              {link.siteName ? (
+                <p className="sitename-text">{link.siteName}</p>
+              ) : (
+                <p className="sitename-text">Site</p>
+              )}
               {link.title ? <p>{link.title}</p> : <p>Title</p>}
               {link.description ? (
                 <p className="system-text">{link.description}</p>
