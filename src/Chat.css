@@ -8,12 +8,13 @@
   align-self: flex-end;
 }
 
-.chat-side {
+.chat-sidebar {
   /* background-color: maroon; */
   position: sticky;
   top: 0;
   bottom: 0;
-  max-width: 30%;
+  min-width: 15rem;
+  width: 30%;
   height: 100vh;
   border-right-width: 2px;
   border-color: #181818;
@@ -21,7 +22,65 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  word-break: break-all;
+}
+
+.logo-container {
+  width: 100%;
+  top: 0;
+  position: sticky;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: #09090990;
+  backdrop-filter: blur(8px);
+  z-index: 1;
+}
+
+.logo-container img {
+  height: 3rem;
+}
+
+.logo-text {
+  font-size: 2rem;
+  font-weight: bold;
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+.link-container {
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  background-color: #181818;
+  transition: transform 0.3s ease;
+}
+.link-container:hover {
+  transform: scale(1.025);
+}
+
+.thumbnail-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.thumbnail-container img {
+  width: 60%;
+  margin-left: 0.5rem;
+  border-radius: 5px;
+}
+
+.sitename-text {
+  width: 100%;
+  text-align: center;
+  color: #099773;
+  font-weight: bold;
 }
 
 .chat-main {
@@ -91,7 +150,7 @@
   cursor: pointer;
 }
 
-.profile-pic-container {
+.profile-pic {
   min-width: 4rem;
   max-width: 4rem;
   display: flex;
@@ -100,7 +159,7 @@
   margin-right: 0.5rem;
 }
 
-.profile-pic {
+.profile-pic img {
   padding: 0.6rem;
   border-radius: 1rem;
   border-width: 2px;

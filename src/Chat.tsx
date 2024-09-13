@@ -3,7 +3,17 @@ import axios from "axios";
 import Typewriter from "typewriter-effect";
 import { MdSend } from "react-icons/md";
 import "./Chat.css";
+import { getLinkPreview } from "link-preview-js";
 // import { scroller } from "react-scroll";
+
+interface Message {
+  sender: "user" | "assistant";
+  message: string;
+  symbol?: string;
+  links: LinkPreview[];
+  action?: string;
+  forecast?: Forecast;
+}
 
 interface Forecast {
   adjClose: number[];
@@ -15,13 +25,12 @@ interface Forecast {
   volume: number[];
 }
 
-interface Message {
-  sender: "user" | "assistant";
-  message: string;
-  symbol?: string;
-  action?: string;
-  forecast?: Forecast;
-  urls?: string[];
+interface LinkPreview {
+  url: string;
+  title: string | undefined;
+  image: string | undefined;
+  siteName: string | undefined;
+  description: string | undefined;
 }
 
 const ChatComponent = () => {
@@ -29,11 +38,12 @@ const ChatComponent = () => {
     sender: "assistant",
     message:
       "Hello, I am Stocker, your personalized AI assistant. Feel free to ask me anything in the realm of financial modeling, stock prices, investment management, or just general monetary advice. I will do my best to help!",
+    links: [],
   };
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([defaultMessage]);
-  const [featuredLinks, setFeaturedLinks] = useState<string[]>([]);
+  const [featuredLinks, setFeaturedLinks] = useState<LinkPreview[]>([]);
 
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +65,35 @@ const ChatComponent = () => {
       );
       const { message, symbol, action, forecast, urls } = response.data;
       console.log(forecast);
+
+      const links: LinkPreview[] = [];
+      for (const url of urls) {
+        try {
+          const data: any = await getLinkPreview(url);
+          var link_thumbnail: string | undefined = undefined;
+          if (data.images.length > 0) {
+            link_thumbnail = data.images[0];
+          }
+          const link: LinkPreview = {
+            url: url,
+            title: data.title,
+            siteName: data.siteName,
+            description: data.description,
+            image: link_thumbnail,
+          };
+          links.push(link);
+        } catch (error) {
+          const link: LinkPreview = {
+            url: url,
+            title: undefined,
+            siteName: undefined,
+            description: undefined,
+            image: undefined,
+          };
+          links.push(link);
+        }
+      }
+
       if (
         forecast &&
         typeof forecast !== "string" &&
@@ -72,10 +111,10 @@ const ChatComponent = () => {
         const assistantMessage: Message = {
           sender: "assistant",
           message: message.replace(/\n/g, "<br />"),
+          links: links,
           symbol: symbol,
           action: action,
           forecast: predictions,
-          urls: urls,
         };
         return assistantMessage;
       } else {
@@ -83,18 +122,19 @@ const ChatComponent = () => {
         const assistantMessage: Message = {
           sender: "assistant",
           message: message.replace(/\n/g, "<br />"),
+          links: links,
           symbol: symbol,
           action: action,
-          urls: urls,
         };
         return assistantMessage;
       }
     } catch (error) {
-      console.error("Error Response: ", error);
+      console.error("Link Preview Error Response: ", error);
       const assistantMessage: Message = {
         sender: "assistant",
         message:
           "I am sorry, I am having trouble with connecting with my back-end. Please check your network connectivity and try again.",
+        links: [],
       };
       return assistantMessage;
     }
@@ -106,65 +146,78 @@ const ChatComponent = () => {
       const question = input.trim();
       setInput("");
 
-      const userMessage: Message = { sender: "user", message: question };
+      const userMessage: Message = {
+        sender: "user",
+        message: question,
+        links: [],
+      };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-      const assistantMessage = await sendQuestion(question);
+      const assistantMessage: Message = {
+        sender: "assistant",
+        message:
+          "I am sorry, I am having trouble with connecting with my back-end. Please check your network connectivity and try again.",
+        links: [
+          {
+            url: "https://www.investors.com/research/nvda-stock-is-nvidia-a-buy-2/",
+            title:
+              "Nvidia Rises To Key Level As CEO Jensen Huang Sees Strong ROI; Is Nvidia A Buy Now?",
+            siteName: undefined,
+            description:
+              "Nvidia stock retook the 50-day moving average on Thursday. On Wednesday, CEO Huang stated that the ROI for AI infrastructure was strong.",
+            image:
+              "https://www.investors.com/wp-content/uploads/2024/06/Stock-Nvidia-JensenHunagGB200-01-company.jpg",
+          },
+          {
+            url: "https://www.investors.com/research/nvda-stock-is-nvidia-a-buy-2/",
+            title: undefined,
+            // "Nvidia Rises To Key Level As CEO Jensen Huang Sees Strong ROI; Is Nvidia A Buy Now?",
+            siteName: "Investor's Business Daily",
+            description: undefined,
+              // "Nvidia stock retook the 50-day moving average on Thursday. On Wednesday, CEO Huang stated that the ROI for AI infrastructure was strong.",
+            image: undefined,
+              // "https://www.investors.com/wp-content/uploads/2024/06/Stock-Nvidia-JensenHunagGB200-01-company.jpg",
+          },
+        ],
+      };
+      // const assistantMessage = await sendQuestion(question);
       setMessages((prevMessages) => [...prevMessages, assistantMessage]);
-      if (assistantMessage.urls && assistantMessage.urls.length > 0) {
-        setFeaturedLinks(assistantMessage.urls);
+      if (assistantMessage.links.length > 0) {
+        setFeaturedLinks(assistantMessage.links);
       }
     }
   }
 
   return (
     <div className="chat-container">
-      <div className="chat-side">
-        {featuredLinks.map((link, u_idx) => (
-          <p key={u_idx}>{link}</p>
+      <div className="chat-sidebar">
+        <div className="logo-container">
+          <img src="stockformer_logo.png" />
+          <p className="logo-text">Stocker</p>
+        </div>
+        <p className="system-text">
+          {featuredLinks.length > 0 ? "——— RELEVANT ARTICLES ———" : ""}
+        </p>
+        {featuredLinks.map((link, l_idx) => (
+          <div key={l_idx} className="link-container">
+            <a href={link.url} target="_blank" rel="noopener noreferrer">
+              <div className="thumbnail-container">
+                {link.siteName ? (
+                  <p className="sitename-text">{link.siteName}</p>
+                ) : (
+                  <p className="sitename-text">Site</p>
+                )}
+                {link.image ? <img src={link.image} /> : <></>}
+              </div>
+              {link.title ? <p>{link.title}</p> : <p>Title</p>}
+              {link.description ? (
+                <p className="system-text">{link.description}</p>
+              ) : (
+                <p className="system-text">Description...</p>
+              )}
+            </a>
+          </div>
         ))}
-        {/* Firstly, considering the user's investor personality, it is clear that
-        they prioritize building wealth and are willing to take calculated risks
-        to achieve their goals. They also prefer to maintain control over their
-        investments and are not averse to borrowing money to make money. This
-        suggests that they may be open to investing in stocks with growth
-        potential. Analyzing the retrieved documents, it is evident that the
-        consensus among Wall Street analysts is that AAPL stock has a positive
-        outlook. The average 12-month price target is around $240-$250, with a
-        high estimate of $300 and a low estimate of $180. This represents a
-        potential upside of 9-12% from the current price. Given this
-        information, I predict that AAPL stock will continue to trend upwards
-        over the next 72 days, driven by the company's strong financials and
-        growth prospects. However, it's essential to note that the stock market
-        can be volatile, and there may be fluctuations along the way. Firstly,
-        considering the user's investor personality, it is clear that they
-        prioritize building wealth and are willing to take calculated risks to
-        achieve their goals. They also prefer to maintain control over their
-        investments and are not averse to borrowing money to make money. This
-        suggests that they may be open to investing in stocks with growth
-        potential. Analyzing the retrieved documents, it is evident that the
-        consensus among Wall Street analysts is that AAPL stock has a positive
-        outlook. The average 12-month price target is around $240-$250, with a
-        high estimate of $300 and a low estimate of $180. This represents a
-        potential upside of 9-12% from the current price. Given this
-        information, I predict that AAPL stock will continue to trend upwards
-        over the next 72 days, driven by the company's strong financials and
-        growth prospects. However, it's essential to note that the stock market
-        can be volatile, and there may be fluctuations along the way. Firstly,
-        considering the user's investor personality, it is clear that they
-        prioritize building wealth and are willing to take calculated risks to
-        achieve their goals. They also prefer to maintain control over their
-        investments and are not averse to borrowing money to make money. This
-        suggests that they may be open to investing in stocks with growth
-        potential. Analyzing the retrieved documents, it is evident that the
-        consensus among Wall Street analysts is that AAPL stock has a positive
-        outlook. The average 12-month price target is around $240-$250, with a
-        high estimate of $300 and a low estimate of $180. This represents a
-        potential upside of 9-12% from the current price. Given this
-        information, I predict that AAPL stock will continue to trend upwards
-        over the next 72 days, driven by the company's strong financials and
-        growth prospects. However, it's essential to note that the stock market
-        can be volatile, and there may be fluctuations along the way. */}
       </div>
       <div className="chat-main">
         <div className="chat-window">
@@ -175,8 +228,8 @@ const ChatComponent = () => {
               </div>
             ) : (
               <div key={m_idx * 10} className="assistant-message-container">
-                <div className="profile-pic-container">
-                  <img src="stockformer_logo.png" className="profile-pic" />
+                <div className="profile-pic">
+                  <img src="stockformer_logo.png" />
                   <p className="system-text">Stocker</p>
                 </div>
                 <div className="assistant-message">
@@ -189,24 +242,6 @@ const ChatComponent = () => {
                       delay: 10,
                     }}
                   />
-                  {/* <div className="url-stack">
-                    {msg.urls && msg.urls.length > 0 ? (
-                      msg.urls.map((url, u_idx) => (
-                        <a
-                          href={url}
-                          key={m_idx * 10 + u_idx}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <br />
-                          {url}
-                          <br />
-                        </a>
-                      ))
-                    ) : (
-                      <></>
-                    )}
-                  </div> */}
                 </div>
               </div>
             )
