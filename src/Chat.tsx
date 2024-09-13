@@ -69,7 +69,7 @@ const ChatComponent = () => {
       const links: LinkPreview[] = [];
       for (const url of urls) {
         try {
-          const data: any = await getLinkPreview(url);
+          const data: any = await getLinkPreview(url, {headers: {'user-agent': 'googlebot', 'Accept-Language': 'en-US'}});
           var link_thumbnail: string | undefined = undefined;
           if (data.images.length > 0) {
             link_thumbnail = data.images[0];
@@ -153,34 +153,7 @@ const ChatComponent = () => {
       };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-      const assistantMessage: Message = {
-        sender: "assistant",
-        message:
-          "I am sorry, I am having trouble with connecting with my back-end. Please check your network connectivity and try again.",
-        links: [
-          {
-            url: "https://www.investors.com/research/nvda-stock-is-nvidia-a-buy-2/",
-            title:
-              "Nvidia Rises To Key Level As CEO Jensen Huang Sees Strong ROI; Is Nvidia A Buy Now?",
-            siteName: undefined,
-            description:
-              "Nvidia stock retook the 50-day moving average on Thursday. On Wednesday, CEO Huang stated that the ROI for AI infrastructure was strong.",
-            image:
-              "https://www.investors.com/wp-content/uploads/2024/06/Stock-Nvidia-JensenHunagGB200-01-company.jpg",
-          },
-          {
-            url: "https://www.investors.com/research/nvda-stock-is-nvidia-a-buy-2/",
-            title: undefined,
-            // "Nvidia Rises To Key Level As CEO Jensen Huang Sees Strong ROI; Is Nvidia A Buy Now?",
-            siteName: "Investor's Business Daily",
-            description: undefined,
-              // "Nvidia stock retook the 50-day moving average on Thursday. On Wednesday, CEO Huang stated that the ROI for AI infrastructure was strong.",
-            image: undefined,
-              // "https://www.investors.com/wp-content/uploads/2024/06/Stock-Nvidia-JensenHunagGB200-01-company.jpg",
-          },
-        ],
-      };
-      // const assistantMessage = await sendQuestion(question);
+      const assistantMessage = await sendQuestion(question);
       setMessages((prevMessages) => [...prevMessages, assistantMessage]);
       if (assistantMessage.links.length > 0) {
         setFeaturedLinks(assistantMessage.links);

@@ -9,7 +9,7 @@ interface LinkPreview {
 }
 
 const url: string =
-  "https://www.investors.com/research/nvda-stock-is-nvidia-a-buy-2/";
+  "https://finance.yahoo.com/news/apple-aapl-expected-beat-earnings-140211938.html?guccounter=1";
 // getLinkPreview(url).then((data) => console.debug(data));
 
 try {
