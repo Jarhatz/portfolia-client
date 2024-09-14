@@ -224,10 +224,12 @@ const ChatComponent = () => {
                   <br />
                   {currentModelMessage.action}
                   <br />
-                  {currentModelMessage.forecast ? "PREDICTION" : "NO PREDICTION"}
+                  {currentModelMessage.forecast
+                    ? "PREDICTION"
+                    : "NO PREDICTION"}
                 </p>
               ) : (
-                ""
+                <></>
               )}
             </div>
           </div>
