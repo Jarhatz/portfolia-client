@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import Typewriter from "typewriter-effect";
 import { MdSend } from "react-icons/md";
 
 import "./Chat.css";
-import Thumbnail from "./Thumbnail";
+import Cursor from "./assets/cursor.svg";
+import useTypingEffect from "./hooks/useTypingEffect";
+import Thumbnail from "./components/Thumbnail";
 
 interface Message {
   sender: "user" | "assistant";
@@ -34,15 +35,17 @@ interface LinkPreview {
 }
 
 const ChatComponent = () => {
-  const defaultMessage: Message = {
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [currentModelMessage, setCurrentModelMessage] = useState<Message>({
     sender: "assistant",
     message:
       "Hello, I am Stocker, your personalized AI assistant. Feel free to ask me anything in the realm of financial modeling, stock prices, investment management, or just general monetary advice. I will do my best to help!",
     links: [],
-  };
-
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([defaultMessage]);
+  });
+  const { text: modelMessage, isTyping } = useTypingEffect(
+    currentModelMessage.message
+  );
   const [featuredLinks, setFeaturedLinks] = useState<LinkPreview[]>([]);
 
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -51,7 +54,7 @@ const ChatComponent = () => {
     if (endOfMessagesRef.current) {
       endOfMessagesRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [modelMessage]);
 
   async function sendQuestion(question: string) {
     try {
@@ -82,7 +85,7 @@ const ChatComponent = () => {
         };
         const assistantMessage: Message = {
           sender: "assistant",
-          message: message.replace(/\n/g, "<br />"),
+          message: message,
           links: links,
           symbol: symbol,
           action: action,
@@ -93,7 +96,7 @@ const ChatComponent = () => {
         console.log("Forecast not provided");
         const assistantMessage: Message = {
           sender: "assistant",
-          message: message.replace(/\n/g, "<br />"),
+          message: message,
           links: links,
           symbol: symbol,
           action: action,
@@ -115,6 +118,13 @@ const ChatComponent = () => {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (input.trim()) {
+      setMessages((prevMessages) => [...prevMessages, currentModelMessage]);
+      setCurrentModelMessage({
+        sender: "assistant",
+        message: "Give me a moment...", // Possibly add chain-of-thought messages
+        links: [],
+      });
+
       const question = input.trim();
       setInput("");
 
@@ -126,7 +136,7 @@ const ChatComponent = () => {
       setMessages((prevMessages) => [...prevMessages, userMessage]);
 
       const assistantMessage = await sendQuestion(question);
-      setMessages((prevMessages) => [...prevMessages, assistantMessage]);
+      setCurrentModelMessage(assistantMessage);
       if (assistantMessage.links.length > 0) {
         setFeaturedLinks(assistantMessage.links);
       }
@@ -138,7 +148,7 @@ const ChatComponent = () => {
       <div className="chat-sidebar">
         <div className="logo-container">
           <img src="stockformer_logo.png" />
-          <p className="logo-text">Stocker</p>
+          <p className="logo-text">STOCKER</p>
         </div>
         <p className="system-text">
           {featuredLinks.length > 0 ? "——— RELEVANT ARTICLES ———" : ""}
@@ -183,19 +193,44 @@ const ChatComponent = () => {
                   <p className="system-text">Stocker</p>
                 </div>
                 <div className="assistant-message">
-                  <Typewriter
-                    options={{
-                      strings: msg.message,
-                      cursor: "",
-                      autoStart: true,
-                      loop: false,
-                      delay: 10,
-                    }}
-                  />
+                  {msg.message}
+                  <br />
+                  {msg.symbol}
+                  <br />
+                  {msg.action}
+                  <br />
+                  {msg.forecast ? "PREDICTION" : "NO PREDICTION"}
                 </div>
               </div>
             )
           )}
+          <div className="assistant-message-container">
+            <div className="profile-pic">
+              <img src="stockformer_logo.png" />
+              <p className="system-text">Stocker</p>
+            </div>
+            <div className="assistant-message">
+              {modelMessage}
+              {isTyping && (
+                <img
+                  src={Cursor}
+                  alt="cursor"
+                  className="inline-block w-[0.75rem] animate-flicker"
+                />
+              )}
+              {!isTyping ? (
+                <p>
+                  {currentModelMessage.symbol}
+                  <br />
+                  {currentModelMessage.action}
+                  <br />
+                  {currentModelMessage.forecast ? "PREDICTION" : "NO PREDICTION"}
+                </p>
+              ) : (
+                ""
+              )}
+            </div>
+          </div>
           <div ref={endOfMessagesRef} />
         </div>
         <div className="chatbar-container">
