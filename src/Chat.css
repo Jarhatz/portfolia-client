@@ -138,6 +138,10 @@
   white-space: pre-line;
 }
 
+.chart {
+  /* background-color: darkslateblue; */
+}
+
 .chatbar-container {
   background-color: #090909;
   position: sticky;

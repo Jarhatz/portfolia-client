@@ -5,6 +5,7 @@ import { MdSend } from "react-icons/md";
 import "./Chat.css";
 import Cursor from "./assets/cursor.svg";
 import useTypingEffect from "./hooks/useTypingEffect";
+import LineChart from "./components/LineChart";
 import Thumbnail from "./components/Thumbnail";
 
 interface Message {
@@ -17,13 +18,13 @@ interface Message {
 }
 
 interface Forecast {
-  adjClose: number[];
-  close: number[];
-  date: string[];
-  high: number[];
-  low: number[];
-  open: number[];
-  volume: number[];
+  dates: string[];
+  opens: number[];
+  closes: number[];
+  highs: number[];
+  lows: number[];
+  adjCloses: number[];
+  volumes: number[];
 }
 
 interface LinkPreview {
@@ -36,6 +37,7 @@ interface LinkPreview {
 
 const ChatComponent = () => {
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentModelMessage, setCurrentModelMessage] = useState<Message>({
     sender: "assistant",
@@ -74,14 +76,32 @@ const ChatComponent = () => {
         typeof forecast !== "string" &&
         typeof forecast !== "number"
       ) {
+        // Function to convert date to YYYY-MM-DD format
+        const formatDate = (dateString: string): string => {
+          const date = new Date(dateString);
+          return date.toISOString().split("T")[0];
+        };
+        const dates = Object.values(forecast["Date"]).map((value) =>
+          String(value)
+        );
+        dates.forEach((value: string, index: number) => {
+          dates[index] = formatDate(value);
+        });
+
         const predictions: Forecast = {
-          adjClose: Object.values(forecast["Adj Close"]),
-          close: Object.values(forecast["Close"]),
-          date: Object.values(forecast["Date"]),
-          high: Object.values(forecast["High"]),
-          low: Object.values(forecast["Low"]),
-          open: Object.values(forecast["Open"]),
-          volume: Object.values(forecast["Volume"]),
+          dates: dates,
+          opens: Object.values(forecast["Open"]).map((value) => Number(value)),
+          closes: Object.values(forecast["Close"]).map((value) =>
+            Number(value)
+          ),
+          highs: Object.values(forecast["High"]).map((value) => Number(value)),
+          lows: Object.values(forecast["Low"]).map((value) => Number(value)),
+          adjCloses: Object.values(forecast["Adj Close"]).map((value) =>
+            Number(value)
+          ),
+          volumes: Object.values(forecast["Volume"]).map((value) =>
+            Number(value)
+          ),
         };
         const assistantMessage: Message = {
           sender: "assistant",
@@ -104,7 +124,7 @@ const ChatComponent = () => {
         return assistantMessage;
       }
     } catch (error) {
-      console.error("Link Preview Error Response: ", error);
+      console.error("API Error Response: ", error);
       const assistantMessage: Message = {
         sender: "assistant",
         message:
@@ -119,11 +139,7 @@ const ChatComponent = () => {
     e.preventDefault();
     if (input.trim()) {
       setMessages((prevMessages) => [...prevMessages, currentModelMessage]);
-      setCurrentModelMessage({
-        sender: "assistant",
-        message: "Give me a moment...", // Possibly add chain-of-thought messages
-        links: [],
-      });
+      setLoading(true);
 
       const question = input.trim();
       setInput("");
@@ -136,6 +152,7 @@ const ChatComponent = () => {
       setMessages((prevMessages) => [...prevMessages, userMessage]);
 
       const assistantMessage = await sendQuestion(question);
+      setLoading(false);
       setCurrentModelMessage(assistantMessage);
       if (assistantMessage.links.length > 0) {
         setFeaturedLinks(assistantMessage.links);
@@ -148,7 +165,7 @@ const ChatComponent = () => {
       <div className="chat-sidebar">
         <div className="logo-container">
           <img src="stockformer_logo.png" />
-          <p className="logo-text">STOCKER</p>
+          <p className="logo-text">Stocker</p>
         </div>
         <p className="system-text">
           {featuredLinks.length > 0 ? "——— RELEVANT ARTICLES ———" : ""}
@@ -194,12 +211,17 @@ const ChatComponent = () => {
                 </div>
                 <div className="assistant-message">
                   {msg.message}
-                  <br />
-                  {msg.symbol}
-                  <br />
-                  {msg.action}
-                  <br />
-                  {msg.forecast ? "PREDICTION" : "NO PREDICTION"}
+                  {msg.symbol && msg.symbol !== "None" ? (
+                    <p>{msg.symbol}</p>
+                  ) : (
+                    <></>
+                  )}
+                  {msg.action && msg.action !== "None" ? (
+                    <p>{msg.action}</p>
+                  ) : (
+                    <></>
+                  )}
+                  {msg.forecast ? <LineChart forecast={msg.forecast} /> : <></>}
                 </div>
               </div>
             )
@@ -210,26 +232,42 @@ const ChatComponent = () => {
               <p className="system-text">Stocker</p>
             </div>
             <div className="assistant-message">
-              {modelMessage}
-              {isTyping && (
-                <img
-                  src={Cursor}
-                  alt="cursor"
-                  className="inline-block w-[0.75rem] animate-flicker"
-                />
-              )}
-              {!isTyping ? (
-                <p>
-                  {currentModelMessage.symbol}
-                  <br />
-                  {currentModelMessage.action}
-                  <br />
-                  {currentModelMessage.forecast
-                    ? "PREDICTION"
-                    : "NO PREDICTION"}
-                </p>
+              {loading ? (
+                "Give me a moment..."
               ) : (
-                <></>
+                <>
+                  {modelMessage}
+                  {isTyping && (
+                    <img
+                      src={Cursor}
+                      alt="cursor"
+                      className="inline-block w-[0.75rem] animate-flicker"
+                    />
+                  )}
+                  {!isTyping ? (
+                    <>
+                      {currentModelMessage.symbol &&
+                      currentModelMessage.symbol !== "None" ? (
+                        <p>{currentModelMessage.symbol}</p>
+                      ) : (
+                        <></>
+                      )}
+                      {currentModelMessage.action &&
+                      currentModelMessage.action !== "None" ? (
+                        <p>{currentModelMessage.action}</p>
+                      ) : (
+                        <></>
+                      )}
+                      {currentModelMessage.forecast ? (
+                        <LineChart forecast={currentModelMessage.forecast} />
+                      ) : (
+                        <></>
+                      )}
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </>
               )}
             </div>
           </div>
