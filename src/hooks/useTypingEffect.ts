@@ -15,7 +15,7 @@ const useTypingEffect = (message: string) => {
         i++;
       } else {
         clearInterval(intervalId);
-        setTimeout(() => setIsTyping(false), 1000);
+        setTimeout(() => setIsTyping(false), 500);
       }
     }, 15);
 

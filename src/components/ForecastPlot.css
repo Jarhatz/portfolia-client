@@ -1,0 +1,41 @@
+.fcp-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.fcp-header {
+  background: linear-gradient(to right, #0d3d2e, #099773);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 1rem 1rem 0 0;
+  padding: 0.25rem 1rem;
+}
+
+.fcp-chart {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #090909;
+  padding: 1rem;
+  border-radius: 0 0 1rem 1rem;
+}
+
+.fcp-header-text {
+  font-weight: bold;
+}
+
+.fcp-dropdown {
+  padding: 0.25rem;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  background-color: #181818;
+  color: white;
+}

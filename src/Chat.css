@@ -56,16 +56,13 @@
   border-radius: 1rem;
   margin: 1rem 0;
   padding: 0.5rem 1rem;
+  border-width: 1px;
+  border-color: #242424;
   background-color: #181818;
   transition: transform 0.3s ease;
 }
 .link-container:hover {
   transform: scale(1.025);
-}
-
-.thumbnail {
-  margin: 0.25rem 0;
-  border-radius: 5px;
 }
 
 .sitename-text {
@@ -136,10 +133,6 @@
   padding: 1rem;
   border-radius: 0 1rem 1rem 1rem;
   white-space: pre-line;
-}
-
-.chart {
-  /* background-color: darkslateblue; */
 }
 
 .chatbar-container {

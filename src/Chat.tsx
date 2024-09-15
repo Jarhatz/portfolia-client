@@ -2,11 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { MdSend } from "react-icons/md";
 
-import "./Chat.css";
-import Cursor from "./assets/cursor.svg";
-import useTypingEffect from "./hooks/useTypingEffect";
-import LineChart from "./components/LineChart";
+import ForecastPlot from "./components/ForecastPlot";
 import Thumbnail from "./components/Thumbnail";
+import Cursor from "./assets/cursor.svg";
+import "./Chat.css";
 
 interface Message {
   sender: "user" | "assistant";
@@ -37,7 +36,7 @@ interface LinkPreview {
 
 const ChatComponent = () => {
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentModelMessage, setCurrentModelMessage] = useState<Message>({
     sender: "assistant",
@@ -45,18 +44,46 @@ const ChatComponent = () => {
       "Hello, I am Stocker, your personalized AI assistant. Feel free to ask me anything in the realm of financial modeling, stock prices, investment management, or just general monetary advice. I will do my best to help!",
     links: [],
   });
-  const { text: modelMessage, isTyping } = useTypingEffect(
-    currentModelMessage.message
-  );
   const [featuredLinks, setFeaturedLinks] = useState<LinkPreview[]>([]);
 
-  const endOfMessagesRef = useRef<HTMLDivElement>(null);
+  // Generate typing animation hook
+  const [forceGenerate, setForceGenerate] = useState(false);
+  const [modelGenerate, setModelGenerate] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
+  useEffect(() => {
+    setIsTyping(true);
+    setModelGenerate(currentModelMessage.message[0]);
+    let i = 0;
+    const intervalId = setInterval(() => {
+      if (i == 0) {
+        setModelGenerate((prev) => prev + currentModelMessage.message[i]);
+        i++;
+      } else if (i < currentModelMessage.message.length - 1) {
+        setModelGenerate((prev) => prev + currentModelMessage.message[i]);
+        i++;
+      } else {
+        clearInterval(intervalId);
+        setTimeout(() => {
+          setIsTyping(false);
+        }, 500);
+      }
+    }, 15);
 
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [currentModelMessage.message, forceGenerate]);
+
+  // Auto-scroll listener hook
+  const endOfMessagesRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (endOfMessagesRef.current) {
-      endOfMessagesRef.current.scrollIntoView({ behavior: "smooth" });
+      setTimeout(
+        () => endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" }),
+        250
+      );
     }
-  }, [modelMessage]);
+  }, [modelGenerate, isLoading]);
 
   async function sendQuestion(question: string) {
     try {
@@ -137,10 +164,8 @@ const ChatComponent = () => {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (input.trim()) {
-      setMessages((prevMessages) => [...prevMessages, currentModelMessage]);
-      setLoading(true);
-
+    if (input.trim() && !isTyping) {
+      setIsLoading(true);
       const question = input.trim();
       setInput("");
 
@@ -149,14 +174,20 @@ const ChatComponent = () => {
         message: question,
         links: [],
       };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        currentModelMessage,
+        userMessage,
+      ]);
 
       const assistantMessage = await sendQuestion(question);
-      setLoading(false);
+      setIsTyping(true);
       setCurrentModelMessage(assistantMessage);
+      setForceGenerate(!forceGenerate);
       if (assistantMessage.links.length > 0) {
         setFeaturedLinks(assistantMessage.links);
       }
+      setIsLoading(false);
     }
   }
 
@@ -216,12 +247,16 @@ const ChatComponent = () => {
                   ) : (
                     <></>
                   )}
+                  {msg.forecast ? (
+                    <ForecastPlot symbol={msg.symbol} forecast={msg.forecast} />
+                  ) : (
+                    <></>
+                  )}
                   {msg.action && msg.action !== "None" ? (
                     <p>{msg.action}</p>
                   ) : (
                     <></>
                   )}
-                  {msg.forecast ? <LineChart forecast={msg.forecast} /> : <></>}
                 </div>
               </div>
             )
@@ -232,23 +267,21 @@ const ChatComponent = () => {
               <p className="system-text">Stocker</p>
             </div>
             <div className="assistant-message">
-              {loading ? (
-                "Give me a moment..."
+              {isLoading ? (
+                <p className="system-text">Stocker is thinking...</p>
               ) : (
                 <>
-                  {modelMessage}
-                  {isTyping && (
+                  {modelGenerate}
+                  {isTyping ? (
                     <img
                       src={Cursor}
                       alt="cursor"
                       className="inline-block w-[0.75rem] animate-flicker"
                     />
-                  )}
-                  {!isTyping ? (
+                  ) : (
                     <>
-                      {currentModelMessage.symbol &&
-                      currentModelMessage.symbol !== "None" ? (
-                        <p>{currentModelMessage.symbol}</p>
+                      {currentModelMessage.forecast ? (
+                        <ForecastPlot symbol={currentModelMessage.symbol} forecast={currentModelMessage.forecast} />
                       ) : (
                         <></>
                       )}
@@ -258,14 +291,7 @@ const ChatComponent = () => {
                       ) : (
                         <></>
                       )}
-                      {currentModelMessage.forecast ? (
-                        <LineChart forecast={currentModelMessage.forecast} />
-                      ) : (
-                        <></>
-                      )}
                     </>
-                  ) : (
-                    <></>
                   )}
                 </>
               )}

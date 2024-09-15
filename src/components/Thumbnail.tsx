@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import "../Chat.css";
+import "./Thumbnail.css";
 
 interface ThumbnailProps {
   src: string;
