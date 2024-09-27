@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { MdSend } from "react-icons/md";
+import { FcBullish, FcBearish } from "react-icons/fc";
+import { GiHalt } from "react-icons/gi";
 
 import ForecastPlot from "./components/ForecastPlot";
 import Thumbnail from "./components/Thumbnail";
@@ -24,6 +26,7 @@ interface Forecast {
   lows: number[];
   adjCloses: number[];
   volumes: number[];
+  numDays: number;
 }
 
 interface LinkPreview {
@@ -129,6 +132,7 @@ const ChatComponent = () => {
           volumes: Object.values(forecast["Volume"]).map((value) =>
             Number(value)
           ),
+          numDays: forecast["Num Days"],
         };
         const assistantMessage: Message = {
           sender: "assistant",
@@ -242,21 +246,48 @@ const ChatComponent = () => {
                 </div>
                 <div className="assistant-message">
                   {msg.message}
-                  {msg.symbol && msg.symbol !== "None" ? (
-                    <p>{msg.symbol}</p>
-                  ) : (
-                    <></>
-                  )}
-                  {msg.forecast ? (
-                    <ForecastPlot symbol={msg.symbol} forecast={msg.forecast} />
-                  ) : (
-                    <></>
-                  )}
-                  {msg.action && msg.action !== "None" ? (
-                    <p>{msg.action}</p>
-                  ) : (
-                    <></>
-                  )}
+                  <div className="fac">
+                    {msg.forecast ? (
+                      <ForecastPlot
+                        symbol={msg.symbol}
+                        forecast={msg.forecast}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                    <div className="ac">
+                      {msg.action && msg.action !== "None" ? (
+                        <p>Action:</p>
+                      ) : (
+                        <></>
+                      )}
+
+                      {msg.action && msg.action === "buy" ? (
+                        <div className="ac-content">
+                          Buy
+                          <FcBullish size={"1.5rem"} />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                      {msg.action && msg.action === "sell" ? (
+                        <div className="ac-content">
+                          Sell
+                          <FcBearish size={"1.5rem"} />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                      {msg.action && msg.action === "hold" ? (
+                        <div className="ac-content">
+                          Hold
+                          <GiHalt size={"1.5rem"} />
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             )
@@ -279,19 +310,52 @@ const ChatComponent = () => {
                       className="inline-block w-[0.75rem] animate-flicker"
                     />
                   ) : (
-                    <>
+                    <div className="fac">
                       {currentModelMessage.forecast ? (
-                        <ForecastPlot symbol={currentModelMessage.symbol} forecast={currentModelMessage.forecast} />
+                        <ForecastPlot
+                          symbol={currentModelMessage.symbol}
+                          forecast={currentModelMessage.forecast}
+                        />
                       ) : (
                         <></>
                       )}
-                      {currentModelMessage.action &&
-                      currentModelMessage.action !== "None" ? (
-                        <p>{currentModelMessage.action}</p>
-                      ) : (
-                        <></>
-                      )}
-                    </>
+                      <div className="ac">
+                        {currentModelMessage.action &&
+                        currentModelMessage.action !== "None" ? (
+                          <p>Action:</p>
+                        ) : (
+                          <></>
+                        )}
+
+                        {currentModelMessage.action &&
+                        currentModelMessage.action === "buy" ? (
+                          <div className="ac-content">
+                            Buy
+                            <FcBullish size={"1.5rem"} />
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                        {currentModelMessage.action &&
+                        currentModelMessage.action === "sell" ? (
+                          <div className="ac-content">
+                            Sell
+                            <FcBearish size={"1.5rem"} />
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                        {currentModelMessage.action &&
+                        currentModelMessage.action === "hold" ? (
+                          <div className="ac-content">
+                            Hold
+                            <GiHalt size={"1.5rem"} />
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
                   )}
                 </>
               )}

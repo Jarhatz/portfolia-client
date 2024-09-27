@@ -10,6 +10,7 @@ interface Forecast {
   lows: number[];
   adjCloses: number[];
   volumes: number[];
+  numDays: number;
 }
 
 interface ForecastComponentProps {
@@ -21,8 +22,7 @@ const ForecastPlot: React.FC<ForecastComponentProps> = ({
   symbol,
   forecast,
 }) => {
-  const { dates, opens, closes, highs, lows, adjCloses, volumes } = forecast;
-  const numDays = (dates.length - 1) / 5;
+  const { dates, opens, closes, highs, lows, adjCloses, volumes, numDays } = forecast;
   const [selectedName, setSelectedName] = useState("Close");
   const [selectedMode, setSelectedMode] = useState(closes);
 
@@ -65,7 +65,7 @@ const ForecastPlot: React.FC<ForecastComponentProps> = ({
     <div className="fcp-container">
       <div className="fcp-header">
         <p className="fcp-header-text">
-          {symbol} - {numDays} Day Stock Forecast
+          {symbol} : {numDays}-Day Stock Forecast
         </p>
         <select className="fcp-dropdown" onChange={handleDropdownChange}>
           <option value="Close">Close Price</option>
@@ -77,7 +77,7 @@ const ForecastPlot: React.FC<ForecastComponentProps> = ({
         </select>
       </div>
       <div className="fcp-chart">
-        <Plot name={selectedName} dates={dates} values={selectedMode} predictionLength={numDays} />
+        <Plot name={selectedName} dates={dates} values={selectedMode} predictionLength={30} />
       </div>
     </div>
   );
