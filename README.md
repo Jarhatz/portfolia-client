@@ -2,6 +2,12 @@
 
 Please begin with cloning the repository:
 ~~~
+docker build -t portfolia-client .
+~~~
+~~~
+docker run --rm -it -p 5173:5173 portfolia-client
+~~~
+~~~
 git clone https://github.com/Jarhatz/portfolia-client.git
 cd portfolia-client
 ~~~
