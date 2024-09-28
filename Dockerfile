@@ -14,45 +14,29 @@ RUN apt-get update && \
 # Set the working directory
 WORKDIR /usr/local/app
 
+# Create a new user 'app'
+RUN useradd -m -d /home/app app
+# Set ownership and permissions for the app directory
+RUN chown -R app:app /usr/local/app && chmod -R 755 /usr/local/app
+
+# Switch to the 'app' user
+USER app
+
 # Install Bun
 RUN curl -fsSL https://bun.sh/install | bash
-
 # Add Bun to PATH
-ENV PATH="/root/.bun/bin:$PATH"
+ENV PATH="/home/app/.bun/bin:$PATH"
 
-# Copy package.json and bun.lockb and .env first (for efficient caching)
-COPY package.json bun.lockb .env ./
+# Ensure the Bun installation directory has the correct permissions
+RUN chown -R app:app /home/app/.bun && chmod -R 755 /home/app/.bun
+
+# Copy project files
+COPY --chown=app:app . .
+RUN chmod -R 755 /usr/local/app
 
 # Install dependencies using Bun
 RUN bun install
 
-# # Add Vite to PATH
-# ENV PATH="/usr/local/app/node_modules/.bin/vite:$PATH"
-
-# Set ownership and permissions for readable/writeable directories
-RUN useradd app
-RUN chown app:app .env
-RUN chmod 600 .env
-RUN chown -R app:app ./node_modules
-# Change permissions of all files to 600 (read and write)
-RUN find ./node_modules -type f -exec chmod 600 {} +
-# Change permissions of all directories to 700 (read, write, and execute)
-RUN find ./node_modules -type d -exec chmod 700 {} +
-
-# Copy all other project files
-COPY public ./public
-COPY src ./src
-COPY eslint.config.js \
-index.html index.ts \
-postcss.config.js \
-tailwind.config.js \
-tsconfig.app.json \
-tsconfig.json \
-tsconfig.node.json \
-vite.config.ts ./
-
 EXPOSE 5173
-
-USER app
 
 CMD ["bun", "run", "dev"]
