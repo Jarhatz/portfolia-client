@@ -1,65 +1,29 @@
-## Portfolia-Client
+# Portfolia Client Web Application
 
-Please begin with cloning the repository:
-~~~
-docker build -t portfolia-client .
-~~~
-~~~
-docker run --rm -it -p 5173:5173 portfolia-client
-~~~
-~~~
+## Instructions for Launching
+
+1. Clone the repository
+```bash
 git clone https://github.com/Jarhatz/portfolia-client.git
 cd portfolia-client
-~~~
-* Be sure to have bun or npm
-~~~
-bun init
-~~~
-To start the development server:
-~~~
-bun run dev
-~~~
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```   
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+2. Build the docker image with the Dockerfile present in the root directory of this repository.
+```bash
+docker build -t portfolia-client .
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+3. Start the web client application.
+```bash
+docker run --rm -it -p 5173:5173 portfolia-client
 ```
+> The container is enabled to expose port 5173 by default, so please make sure that port is unused.
+
+4. Open the development server link and start using Portfolia!
+> The React web application should be running on: [http://localhost:5173/](http://localhost:5173/)
+
+## Built With
+- Bun
+- React
+- TypeScript + SWC
+- HTML/CSS
