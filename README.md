@@ -12,15 +12,16 @@ cd portfolia-client
 ```bash
 docker build -t portfolia-client .
 ```
+> _This may take ~5 minutes to build_
 
 3. Start the web client application.
 ```bash
 docker run --rm -it -p 5173:5173 portfolia-client
 ```
-> The container is enabled to expose port 5173 by default, so please make sure that port is unused.
+> _The container is enabled to expose port 5173 by default, so please make sure that port is unused._
 
 4. Open the development server link and start using Portfolia!
-> The React web application should be running on: [http://localhost:5173/](http://localhost:5173/)
+> _The React web application should be running on:_ [http://localhost:5173/](http://localhost:5173/)
 
 ## Built With
 - Bun
