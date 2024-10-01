@@ -23,7 +23,7 @@ docker run --rm -it -p 5173:5173 portfolia-client
 4. Open the development server link and start using Portfolia!
 > _The React web application should be running on:_ [http://localhost:5173/](http://localhost:5173/)
 
-==Sample Questions
+##Sample Questions
 
 What are key factors you consider when determining whether a stock is overvalued or undervalued?
 
