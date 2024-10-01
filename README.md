@@ -23,15 +23,15 @@ docker run --rm -it -p 5173:5173 portfolia-client
 4. Open the development server link and start using Portfolia!
 > _The React web application should be running on:_ [http://localhost:5173/](http://localhost:5173/)
 
-##Sample Questions
+## Sample Questions
 
-What are key factors you consider when determining whether a stock is overvalued or undervalued?
+1. What are key factors you consider when determining whether a stock is overvalued or undervalued?
 
-What stocks in the commodity sectors should I invest in?
+2. What stocks in the commodity sectors should I invest in?
 
-Should I invest in NVDA or do you think that it will reach a market cap within the next month?
+3. Should I invest in NVDA or do you think that it will reach a market cap within the next month?
 
-Predict AAPL stocks for the next 6 months.
+4. Predict AAPL stocks for the next 6 months.
 
 ## Built With
 - Bun
