@@ -35,6 +35,7 @@ docker run --rm -it -p 5173:5173 portfolia-client
 
 ## Built With
 - Bun
+- Vite
 - React
 - TypeScript + SWC
 - HTML/CSS
