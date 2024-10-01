@@ -203,7 +203,7 @@ const ChatComponent = () => {
       <div className="chat-sidebar">
         <div className="logo-container">
           <img src="stockformer_logo.png" />
-          <p className="logo-text">Stocker</p>
+          <p className="logo-text">Portfolia</p>
         </div>
         <p className="system-text">
           {featuredLinks.length > 0 ? "——— RELEVANT ARTICLES ———" : ""}
