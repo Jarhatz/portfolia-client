@@ -91,7 +91,7 @@ const ChatComponent = () => {
   async function sendQuestion(question: string) {
     try {
       const instance = axios.create({
-        timeout: 2000 * 60 // Set timeout to 2 minutes
+        timeout: 3000 * 60 // Set timeout to 3 minutes
       });
       const response = await instance.get(
         `${import.meta.env.VITE_BACKEND_API_URL}/chat`,
