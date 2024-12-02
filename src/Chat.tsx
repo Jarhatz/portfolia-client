@@ -16,7 +16,7 @@ interface Message {
   symbol?: string;
   action?: string;
   forecast?: Forecast;
-  options?: { [key: string]: string };  // To handle quiz options
+  options?: { [key: string]: string }; // To handle quiz options
 }
 
 interface Forecast {
@@ -45,7 +45,7 @@ const ChatComponent = () => {
   const [currentModelMessage, setCurrentModelMessage] = useState<Message>({
     sender: "assistant",
     message:
-      "Hello, I am Stocker, your personalized AI assistant. Feel free to ask me anything in the realm of financial modeling, stock prices, investment management, or just general monetary advice. I will do my best to help!\n\nIf you'd like to retake the investor personality quiz, just type 'retake quiz'.",
+      'Hello, I am Stocker, your personalized AI assistant. Feel free to ask me anything in the realm of financial modeling, stock prices, investment management, or just general monetary advice. I will do my best to help!\n\nIf you\'d like me to learn more about your investor personality, please type, "Take Quiz".',
     links: [],
   });
   const [featuredLinks, setFeaturedLinks] = useState<LinkPreview[]>([]);
@@ -70,7 +70,7 @@ const ChatComponent = () => {
           }, 500);
         }
       }, 15);
-  
+
       return () => {
         clearInterval(intervalId);
       };
@@ -108,9 +108,9 @@ const ChatComponent = () => {
         }
       );
       const data = response.data;
-  
+
       let assistantMessage: Message;
-  
+
       if (data.options) {
         // The server sent a quiz question
         assistantMessage = {
@@ -123,9 +123,9 @@ const ChatComponent = () => {
         // Regular assistant response
         const { message, links, symbol, action, forecast } = data;
         console.log(forecast);
-  
+
         let forecastData: Forecast | undefined = undefined;
-  
+
         if (
           forecast &&
           typeof forecast !== "string" &&
@@ -142,14 +142,18 @@ const ChatComponent = () => {
           dates.forEach((value: string, index: number) => {
             dates[index] = formatDate(value);
           });
-  
+
           forecastData = {
             dates: dates,
-            opens: Object.values(forecast["Open"]).map((value) => Number(value)),
+            opens: Object.values(forecast["Open"]).map((value) =>
+              Number(value)
+            ),
             closes: Object.values(forecast["Close"]).map((value) =>
               Number(value)
             ),
-            highs: Object.values(forecast["High"]).map((value) => Number(value)),
+            highs: Object.values(forecast["High"]).map((value) =>
+              Number(value)
+            ),
             lows: Object.values(forecast["Low"]).map((value) => Number(value)),
             adjCloses: Object.values(forecast["Adj Close"]).map((value) =>
               Number(value)
@@ -162,7 +166,7 @@ const ChatComponent = () => {
         } else {
           console.log("Forecast not provided");
         }
-  
+
         assistantMessage = {
           sender: "assistant",
           message: message,
@@ -172,7 +176,7 @@ const ChatComponent = () => {
           forecast: forecastData,
         };
       }
-  
+
       // Update currentModelMessage and other states
       setCurrentModelMessage(assistantMessage);
       setForceGenerate((prev) => !prev);
@@ -193,7 +197,7 @@ const ChatComponent = () => {
           "I am sorry, I am having trouble connecting with my back-end. Please check your network connectivity and try again.",
         links: [],
       };
-  
+
       // Update currentModelMessage with error message
       setCurrentModelMessage(assistantMessage);
       setForceGenerate((prev) => !prev);
@@ -203,7 +207,7 @@ const ChatComponent = () => {
       return assistantMessage;
     }
   }
-  
+
   function handleOptionSelect(option: string) {
     // Send the selected option back to the server as a message
     sendQuestion(option);
@@ -215,14 +219,14 @@ const ChatComponent = () => {
       setIsLoading(true);
       const question = input.trim();
       setInput("");
-  
+
       const userMessage: Message = {
         sender: "user",
         message: question,
         links: [],
       };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
-  
+
       // We don't need to assign assistantMessage here since sendQuestion handles it
       await sendQuestion(question);
     }
@@ -281,20 +285,25 @@ const ChatComponent = () => {
                   {msg.message}
                   {msg.options ? (
                     <div className="quiz-options">
-                      {Object.entries(msg.options).map(([optionKey, optionText]) => (
-                        <button
-                          key={optionKey}
-                          onClick={() => handleOptionSelect(optionKey)}
-                          className="quiz-option-button"
-                        >
-                          {optionKey}) {optionText}
-                        </button>
-                      ))}
+                      {Object.entries(msg.options).map(
+                        ([optionKey, optionText]) => (
+                          <button
+                            key={optionKey}
+                            onClick={() => handleOptionSelect(optionKey)}
+                            className="quiz-option-button"
+                          >
+                            {optionKey}) {optionText}
+                          </button>
+                        )
+                      )}
                     </div>
                   ) : (
                     <div className="fac">
                       {msg.forecast ? (
-                        <ForecastPlot symbol={msg.symbol} forecast={msg.forecast} />
+                        <ForecastPlot
+                          symbol={msg.symbol}
+                          forecast={msg.forecast}
+                        />
                       ) : null}
                       <div className="ac">
                         {msg.action && msg.action !== "None" && <p>Action:</p>}
